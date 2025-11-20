@@ -15,6 +15,7 @@ export default function Navbar() {
         </Link>
         <div className="hidden md:flex items-center gap-2">
           <NavLink to="/matches" className={linkCls}>Matches</NavLink>
+          <NavLink to="/teams" className={linkCls}>Teams</NavLink>
           <NavLink to="/stats" className={linkCls}>Stats</NavLink>
           <NavLink to="/news" className={linkCls}>News</NavLink>
           <NavLink to="/media" className={linkCls}>Media</NavLink>
@@ -27,6 +28,7 @@ export default function Navbar() {
         <div className="md:hidden border-t border-white/10 bg-slate-950/95">
           <div className="max-w-6xl mx-auto px-4 py-3 grid gap-2">
             <NavLink to="/matches" onClick={()=>setOpen(false)} className={linkCls}>Matches</NavLink>
+            <NavLink to="/teams" onClick={()=>setOpen(false)} className={linkCls}>Teams</NavLink>
             <NavLink to="/stats" onClick={()=>setOpen(false)} className={linkCls}>Stats</NavLink>
             <NavLink to="/news" onClick={()=>setOpen(false)} className={linkCls}>News</NavLink>
             <NavLink to="/media" onClick={()=>setOpen(false)} className={linkCls}>Media</NavLink>

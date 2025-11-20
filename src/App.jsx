@@ -8,6 +8,8 @@ import Media from './pages/Media'
 import Community from './pages/Community'
 import Live from './pages/Live'
 import Player from './pages/Player'
+import Teams from './pages/Teams'
+import TeamHub from './pages/TeamHub'
 
 export default function AppRouter(){
   return (
@@ -22,6 +24,8 @@ export default function AppRouter(){
         <Route path="/community" element={<Community />} />
         <Route path="/live" element={<Live />} />
         <Route path="/players/:name" element={<Player />} />
+        <Route path="/teams" element={<Teams />} />
+        <Route path="/teams/:teamId" element={<TeamHub />} />
       </Routes>
     </div>
   )
