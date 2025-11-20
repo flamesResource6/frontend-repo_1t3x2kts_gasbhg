@@ -5,11 +5,13 @@ import { storage } from '../lib/firebase'
 export default function Media() {
   const [photos, setPhotos] = useState([])
   const [videos, setVideos] = useState([
-    // Example YouTube IDs – replace with Firestore-driven if needed
     'dQw4w9WgXcQ'
   ])
 
+  const storageEnabled = Boolean(storage)
+
   useEffect(() => {
+    if (!storageEnabled) return
     const load = async () => {
       try {
         const albumRef = ref(storage, 'media/photos')
@@ -21,18 +23,21 @@ export default function Media() {
       }
     }
     load()
-  }, [])
+  }, [storageEnabled])
 
   return (
     <div className="min-h-screen bg-slate-950 text-white px-4 py-10">
       <div className="max-w-6xl mx-auto grid gap-10">
+        {!storageEnabled && (
+          <div className="rounded-xl bg-amber-500/10 border border-amber-300/30 text-amber-200 p-3">Connect Firebase Storage to load gallery images.</div>
+        )}
         <section>
           <h2 className="text-2xl font-extrabold mb-4">Photo Gallery</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
             {photos.map((p, i) => (
               <img key={i} src={p} className="w-full h-40 object-cover rounded-lg border border-white/10" />
             ))}
-            {!photos.length && <p className="text-slate-400">No photos yet</p>}
+            {!photos.length && <p className="text-slate-400">{storageEnabled ? 'No photos yet' : 'Storage not configured'}</p>}
           </div>
         </section>
 

@@ -1,4 +1,4 @@
-// Firebase client initialization for web app
+// Firebase client initialization for web app with safe guards
 // Uses environment variables prefixed with VITE_ so Vite can inject at build time
 import { initializeApp, getApps } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
@@ -15,9 +15,22 @@ const firebaseConfig = {
   databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
 }
 
-const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig)
+// Only initialize if we have a minimally valid config (apiKey + projectId + appId)
+const hasMinimalConfig = Boolean(firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId)
 
-export const db = getFirestore(app)
-export const rtdb = getDatabase(app)
-export const storage = getStorage(app)
+let app = null
+try {
+  if (hasMinimalConfig) {
+    app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig)
+  } else {
+    // Don’t crash the app if env isn’t set yet – just log a warning
+    console.warn('[Firebase] Missing configuration. Pages will show placeholders until config is provided.')
+  }
+} catch (e) {
+  console.warn('[Firebase] Initialization failed:', e)
+}
+
+export const db = app ? getFirestore(app) : null
+export const rtdb = app ? getDatabase(app) : null
+export const storage = app ? getStorage(app) : null
 export default app

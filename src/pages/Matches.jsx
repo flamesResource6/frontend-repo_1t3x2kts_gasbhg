@@ -6,7 +6,10 @@ export default function Matches() {
   const [filter, setFilter] = useState('upcoming')
   const [matches, setMatches] = useState([])
 
+  const firestoreEnabled = Boolean(db)
+
   useEffect(() => {
+    if (!firestoreEnabled) return
     const load = async () => {
       let q
       const now = new Date().toISOString()
@@ -17,11 +20,14 @@ export default function Matches() {
       setMatches(snap.docs.map(d => ({ id: d.id, ...d.data() })))
     }
     load()
-  }, [filter])
+  }, [filter, firestoreEnabled])
 
   return (
     <div className="min-h-screen bg-slate-950 text-white px-4 py-10">
       <div className="max-w-5xl mx-auto">
+        {!firestoreEnabled && (
+          <div className="rounded-xl bg-amber-500/10 border border-amber-300/30 text-amber-200 p-3 mb-4">Connect Firebase to view the schedule.</div>
+        )}
         <div className="flex gap-2 mb-4">
           {['upcoming','results','all'].map(f => (
             <button key={f} onClick={() => setFilter(f)} className={`px-4 py-2 rounded-full border ${filter===f?'bg-white text-slate-900':'bg-slate-900/60 text-white border-white/10'}`}>{f}</button>
@@ -35,7 +41,7 @@ export default function Matches() {
               <div className="text-xs text-slate-400 mt-1">{m.status}</div>
             </div>
           ))}
-          {!matches.length && <p className="text-slate-400">Loading…</p>}
+          {!matches.length && <p className="text-slate-400">{firestoreEnabled ? 'Loading…' : 'No data'}</p>}
         </div>
       </div>
     </div>

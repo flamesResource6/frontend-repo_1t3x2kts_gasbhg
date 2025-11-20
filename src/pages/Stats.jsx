@@ -6,7 +6,10 @@ export default function Stats() {
   const [batting, setBatting] = useState([])
   const [bowling, setBowling] = useState([])
 
+  const firestoreEnabled = Boolean(db)
+
   useEffect(() => {
+    if (!firestoreEnabled) return
     const load = async () => {
       const snap = await getDocs(collection(db, 'players'))
       const players = snap.docs.map(d => ({ id: d.id, ...d.data() }))
@@ -16,11 +19,14 @@ export default function Stats() {
       setBowling(bowl)
     }
     load()
-  }, [])
+  }, [firestoreEnabled])
 
   return (
     <div className="min-h-screen bg-slate-950 text-white px-4 py-10">
       <div className="max-w-5xl mx-auto grid gap-8">
+        {!firestoreEnabled && (
+          <div className="rounded-xl bg-amber-500/10 border border-amber-300/30 text-amber-200 p-3">Connect Firebase to view live leaderboards.</div>
+        )}
         <section>
           <h2 className="text-2xl font-extrabold">Batting Leaders</h2>
           <div className="mt-4 grid gap-2">
@@ -37,7 +43,7 @@ export default function Stats() {
                 </div>
               </div>
             ))}
-            {!batting.length && <p className="text-slate-400">Loading…</p>}
+            {!batting.length && <p className="text-slate-400">{firestoreEnabled ? 'Loading…' : 'No data'}</p>}
           </div>
         </section>
 
@@ -57,7 +63,7 @@ export default function Stats() {
                 </div>
               </div>
             ))}
-            {!bowling.length && <p className="text-slate-400">Loading…</p>}
+            {!bowling.length && <p className="text-slate-400">{firestoreEnabled ? 'Loading…' : 'No data'}</p>}
           </div>
         </section>
       </div>

@@ -28,7 +28,10 @@ export default function Home() {
   const [points, setPoints] = useState([])
   const [nextMatch, setNextMatch] = useState(null)
 
+  const firestoreEnabled = Boolean(db)
+
   useEffect(() => {
+    if (!firestoreEnabled) return
     const load = async () => {
       try {
         const newsSnap = await getDocs(query(collection(db, 'news'), orderBy('date', 'desc'), limit(10)))
@@ -44,7 +47,7 @@ export default function Home() {
       } catch {}
     }
     load()
-  }, [])
+  }, [firestoreEnabled])
 
   const countdown = useMemo(() => {
     if (!nextMatch?.date) return null
@@ -61,6 +64,13 @@ export default function Home() {
       <HomeHero />
 
       <div className="mx-auto max-w-6xl px-4 py-10 grid gap-8">
+        {!firestoreEnabled && (
+          <div className="rounded-2xl bg-amber-500/10 border border-amber-300/30 text-amber-200 p-4">
+            <p className="font-semibold">Firebase isn’t configured yet.</p>
+            <p className="text-sm mt-1">Add your VITE_FIREBASE_* env vars to enable live data. Until then, the UI will render without data.</p>
+          </div>
+        )}
+
         <section className="rounded-2xl bg-slate-900/60 border border-white/10 p-6">
           <h2 className="text-xl font-bold">Next Match</h2>
           {nextMatch ? (
@@ -72,7 +82,7 @@ export default function Home() {
               <div className="text-2xl font-extrabold bg-slate-800/80 px-4 py-2 rounded-lg">{countdown || '—'}</div>
             </div>
           ) : (
-            <p className="text-slate-400 mt-2">Loading…</p>
+            <p className="text-slate-400 mt-2">{firestoreEnabled ? 'Loading…' : 'Connect Firebase to see data'}</p>
           )}
         </section>
 
@@ -89,7 +99,7 @@ export default function Home() {
                 <p className="text-xs text-slate-400">NRR {t.nrr ?? '—'}</p>
               </div>
             ))}
-            {!points.length && <p className="text-slate-400">Loading…</p>}
+            {!points.length && <p className="text-slate-400">{firestoreEnabled ? 'Loading…' : 'No data'}</p>}
           </div>
         </section>
 
@@ -102,7 +112,7 @@ export default function Home() {
                 <div className="mt-1 font-bold line-clamp-2">{n.title}</div>
                 <div className="text-xs text-slate-400 mt-2">{n.category}</div>
               </Link>
-            )) : <p className="text-slate-400">Loading…</p>}
+            )) : <p className="text-slate-400">{firestoreEnabled ? 'Loading…' : 'No news yet'}</p>}
           </div>
         </section>
       </div>
